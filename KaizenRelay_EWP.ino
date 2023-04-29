@@ -176,10 +176,9 @@ ISR(TIMER1_COMPA_vect)  //Timer1 Interrupt
   if (PWMpulseCounter < Output_1_Duty) PORTB = PORTB | 0b00100000;
   else PORTB = PORTB & 0b11011111;
 
-   if(Output_2_Mode == 1)
-  {
-    if(PWMpulseCounter < Output_2_Duty) PORTC = PORTC | 0b10000000;
-    else                                PORTC = PORTC & 0b01111111;
+  if (Output_2_Mode == 1) {
+    if (PWMpulseCounter < Output_2_Duty) PORTC = PORTC | 0b10000000;
+    else PORTC = PORTC & 0b01111111;
   }
 }
 
@@ -198,7 +197,7 @@ void CANListenMsg() {
       EWPTimer = 0;
       DisableGreenLED();
     }
-
+    
     if ((ECT <= 50) && (EWPTimer <= 9)) {
       OutputEWPDuty();
       EnableGreenLED();

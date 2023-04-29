@@ -76,13 +76,13 @@ void DisableCANTermResistor() {
 
 void SendHWStatusCAN() {
   if (CAN_Msg_Counter == 0) {
-    if ((Output_1_Duty > 0) && (Output_2_Duty > 0)) CAN_Status_Msg_1[0] = (CAN_Status_Msg_1[0] | 0x01);
+    if ((Output_1_Duty > 0) || (Output_2_Duty > 0)) CAN_Status_Msg_1[0] = (CAN_Status_Msg_1[0] | 0x01);
     else CAN_Status_Msg_1[0] = (CAN_Status_Msg_1[0] & 0x00);
     CAN_Status_Msg_1[1] = 0x64;
     CAN_Status_Msg_1[2] = ECT;
     CAN_Status_Msg_1[3] = Output_1_Duty;
     CAN_Status_Msg_1[4] = EWPTimer;
-    CAN_Status_Msg_1[5] = 0xFF;
+    CAN_Status_Msg_1[5] = 0xFF;;
     CAN_Status_Msg_1[6] = 0xFF;
     CAN_Status_Msg_1[7] = 0xFF;
 
