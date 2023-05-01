@@ -82,7 +82,7 @@ void SendHWStatusCAN() {
     CAN_Status_Msg_1[2] = ECT;
     CAN_Status_Msg_1[3] = Output_1_Duty;
     CAN_Status_Msg_1[4] = EWPTimer;
-    CAN_Status_Msg_1[5] = 0xFF;;
+    CAN_Status_Msg_1[5] = 0xFF;
     CAN_Status_Msg_1[6] = 0xFF;
     CAN_Status_Msg_1[7] = 0xFF;
 
