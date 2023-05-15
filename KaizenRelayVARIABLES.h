@@ -104,6 +104,8 @@ unsigned char CAN_Msg_Counter = 0;
 double ECT = 0.00;
 double EWPDuty = 0;
 int EWPTimer = 0;
+int RPM = 0;
+int CAL = 0;
 
 //Global Variables: LEDs
 bool LED_Green_Status = false;

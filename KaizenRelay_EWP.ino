@@ -7,6 +7,7 @@ void EnableRedLED();
 void DisableRedLED();
 
 void OutputZeroDuty();
+void Output100Duty();
 void OutputEWPDuty();
 
 #include "KaizenRelay.h"
@@ -196,34 +197,43 @@ void CANListenMsg() {
       EWPTimer = 0;
       DisableGreenLED();
     }
+  
+    if (((CAN_Read_Msg[4] * 256) + CAN_Read_Msg[5])) {
+       RPM = (((CAN_Read_Msg[4] * 256) + CAN_Read_Msg[5]));
+    }
 
-    if ((ECT <= 50) && (EWPTimer <= 9)) {
+    if (((CAN_Read_Msg[6] * 256) + CAN_Read_Msg[7])) {
+       CAL = (((CAN_Read_Msg[6] * 256) + CAN_Read_Msg[7]));
+    }
+  
+
+    if ((ECT <= 50) && (EWPTimer <= 9) && (RPM >= 500)) {
       OutputEWPDuty();
       EnableGreenLED();
-    } else if ((ECT <= 50) && (EWPTimer == 10)) {
+    } else if ((ECT <= 50) && (EWPTimer == 10) && (RPM >= 500)) {
       OutputZeroDuty();
       DisableGreenLED();
-    } else if ((ECT <= 50) && (EWPTimer >= 40)) {
+    } else if ((ECT <= 50) && (EWPTimer >= 40) && (RPM >= 500)) {
       EWPTimer = 0;
     }
 
-    if ((ECT >= 51) && (ECT <= 70) && (EWPTimer <= 9)) {
+    if ((ECT >= 51) && (ECT <= 70) && (EWPTimer <= 9) && (RPM >= 500)) {
       OutputEWPDuty();
       EnableGreenLED();
-    } else if ((ECT >= 51) && (ECT <= 70) && (EWPTimer == 10)) {
+    } else if ((ECT >= 51) && (ECT <= 70) && (EWPTimer == 10) && (RPM >= 500)) {
       OutputZeroDuty();
       DisableGreenLED();
-    } else if ((ECT >= 51) && (ECT <= 70) && (EWPTimer >= 20)) {
+    } else if ((ECT >= 51) && (ECT <= 70) && (EWPTimer >= 20) && (RPM >= 500)) {
       EWPTimer = 0;
     }
 
-    if ((ECT >= 71) && (ECT <= 85) && (EWPTimer <= 5)) {
+    if ((ECT >= 71) && (ECT <= 85) && (EWPTimer <= 5) && (RPM >= 500)) {
       OutputEWPDuty();
       EnableGreenLED();
-    } else if ((ECT >= 71) && (ECT <= 85) && (EWPTimer == 6)) {
+    } else if ((ECT >= 71) && (ECT <= 85) && (EWPTimer == 6) && (RPM >= 500)) {
       OutputZeroDuty();
       DisableGreenLED();
-    } else if ((ECT >= 71) && (ECT <= 85) && (EWPTimer >= 7)) {
+    } else if ((ECT >= 71) && (ECT <= 85) && (EWPTimer >= 7) && (RPM >= 500)) {
       EWPTimer = 0;
     }
 
@@ -232,6 +242,16 @@ void CANListenMsg() {
       EnableGreenLED();
       EWPTimer = 0;
     }
+
+     if ((CAL == 12) && (RPM == 0)) {
+      Output100Duty();
+      EnableGreenLED();
+    }
+
+      if ((CAL != 12) && (RPM == 0) && (ECT <= 85)) {
+      OutputZeroDuty();
+      DisableGreenLED();
+    }
   }
 }
 
@@ -239,6 +259,12 @@ void OutputZeroDuty() {
 
   Output_1_Duty = 0;
   Output_2_Duty = 0;
+}
+
+void Output100Duty() {
+
+  Output_1_Duty = 100;
+  Output_2_Duty = 100;
 }
 
 void OutputEWPDuty() {
