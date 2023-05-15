@@ -163,8 +163,15 @@ void Timer1000ms() {
       DisableRedLED();
     }
   }
-  if (EWPTimer < 0) EWPTimer = 0;
-  if (ECT <= 85) EWPTimer++;
+  // Reset EWPTimer if it ever gets out of bounds to zero
+  if ((EWPTimer < 0) || (EWPTimer > 60)) {
+    EWPTimer = 0;
+  }
+
+  //Increment the timer when the car is running and the ECT is under 85c
+  if ((ECT <= 85) && (RPM >= 500)) {
+    EWPTimer++;
+  }
 }
 
 
@@ -183,29 +190,30 @@ ISR(TIMER1_COMPA_vect)  //Timer1 Interrupt
 
 
 void CANListenMsg() {
-
+  //Read CANBus messages from Syvecs
   if (CAN_Read_ID == (Syvecs_Base_AddressRx)) {
-
+    // Read 16bit ECT CAN Frame
     if ((CAN_Read_Msg[0]) || (CAN_Read_Msg[1])) {
       ECT = ((CAN_Read_Msg[0] * 256) + CAN_Read_Msg[1]) / 10;
     }
-
+    // Read 16bit EWPDuty CAN Frame
     if ((((CAN_Read_Msg[2] * 256) + CAN_Read_Msg[3]) / 81.92) <= 100) {
       EWPDuty = ((CAN_Read_Msg[2] * 256) + CAN_Read_Msg[3]) / 81.92;
     } else {
-      OutputZeroDuty();
+      //If we can't read the duty, we will operate the pump as a safety precaution
+      Output100Duty();
       EWPTimer = 0;
-      DisableGreenLED();
+      EnableRedLED();
     }
-  
+    // Read 16bit RPM CAN Frame
     if ((CAN_Read_Msg[4]) || (CAN_Read_Msg[5])) {
-       RPM = ((CAN_Read_Msg[4] * 256) + CAN_Read_Msg[5]);
+      RPM = ((CAN_Read_Msg[4] * 256) + CAN_Read_Msg[5]);
+    }
+    // Read 16bit CAL CAN Frame
+    if ((CAN_Read_Msg[6]) || (CAN_Read_Msg[7])) {
+      CAL = ((CAN_Read_Msg[6] * 256) + CAN_Read_Msg[7]);
     }
 
-    if ((CAN_Read_Msg[6]) || (CAN_Read_Msg[7])) {
-       CAL = ((CAN_Read_Msg[6] * 256) + CAN_Read_Msg[7]);
-    }
-  
 
     if ((ECT <= 50) && (EWPTimer <= 9) && (RPM >= 500)) {
       OutputEWPDuty();
@@ -243,12 +251,12 @@ void CANListenMsg() {
       EWPTimer = 0;
     }
 
-     if ((CAL == 12) && (RPM == 0)) {
+    if ((CAL == 12) && (RPM == 0)) {
       Output100Duty();
       EnableGreenLED();
     }
 
-      if ((CAL != 12) && (RPM == 0) && (ECT <= 85)) {
+    if ((CAL != 12) && (RPM == 0) && (ECT <= 85)) {
       OutputZeroDuty();
       DisableGreenLED();
     }
