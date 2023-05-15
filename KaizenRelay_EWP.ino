@@ -198,12 +198,12 @@ void CANListenMsg() {
       DisableGreenLED();
     }
   
-    if (((CAN_Read_Msg[4] * 256) + CAN_Read_Msg[5])) {
-       RPM = (((CAN_Read_Msg[4] * 256) + CAN_Read_Msg[5]));
+    if ((CAN_Read_Msg[4]) || (CAN_Read_Msg[5])) {
+       RPM = ((CAN_Read_Msg[4] * 256) + CAN_Read_Msg[5]);
     }
 
-    if (((CAN_Read_Msg[6] * 256) + CAN_Read_Msg[7])) {
-       CAL = (((CAN_Read_Msg[6] * 256) + CAN_Read_Msg[7]));
+    if ((CAN_Read_Msg[6]) || (CAN_Read_Msg[7])) {
+       CAL = ((CAN_Read_Msg[6] * 256) + CAN_Read_Msg[7]);
     }
   
 
